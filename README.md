@@ -60,14 +60,70 @@ db.students.save({name: 'zx',age: 24})
 
 show collections
 // 查看有哪些集合
+```
 
-
+## update
+```
 db.collection.update(query,data,params)
 // query     查询条件
 // data      要替换的数据
-// params    替换数据的一些参数
+params {
+    multi: true,  // 默认false，只更新第一条更新到的数据，true是更新所有匹配到的数据
+    upsert: true  // 默认false，更新时没有数据，就会创建一条新的数据
+}
 
-操作符  $set  查看图一和图二
+### $set    添加字段
+原始数据库信息
+{ "_id" : 1, "name" : "zx", "age" : 24 }
+{ "_id" : 2, "name" : "zx1", "age" : 24 }
+{ "_id" : 3, "name" : "zx", "age" : 25 }
 
+> db.students.update({name: 'zx1'},{age: 25})  // 不用操作符$set
+// 更改后的数据
+{ "_id" : 1, "name" : "zx", "age" : 24 }
+{ "_id" : 2, "age" : 25 }
+{ "_id" : 3, "name" : "zx", "age" : 25 }
+
+> db.students.update({name: 'zx'},{$set: {age: 28}})  // 使用了$set 操作符
+// 加上操作符$set 更改后的信息
+{ "_id" : 1, "name" : "zx", "age" : 28 }
+{ "_id" : 2, "age" : 25 }
+{ "_id" : 3, "name" : "zx", "age" : 25 }
+
+###  update中的最后一个参数
+#####    multi
+> db.students.update({name: 'zx'},{$set: {age: 29}},{multi: true}) // 添加multi时数据变化
+
+{ "_id" : 1, "name" : "zx", "age" : 29 }
+{ "_id" : 2, "age" : 25 }
+{ "_id" : 3, "name" : "zx", "age" : 29 }
+
+#####    upsert
+> db.students.update({name: 'zx24'},{age: 29},{upsert: true}) // 添加multi时数据变化
+
+{ "_id" : 1, "name" : "zx", "age" : 29 }
+{ "_id" : 2, "age" : 25 }
+{ "_id" : 3, "name" : "zx", "age" : 29 }
+{ "_id" : ObjectId("5ceab9fdb2d9208fe124902b"), "age" : 29 }
+
+> db.students.update({name: 'zx24'},{$set: {age: 29}},{upsert: true}) // 添加multi时数据变化
+
+{ "_id" : 1, "name" : "zx", "age" : 29 }
+{ "_id" : 2, "age" : 25 }
+{ "_id" : 3, "name" : "zx", "age" : 29 }
+{ "_id" : ObjectId("5ceab9fdb2d9208fe124902b"), "name" : "zx24", "age" : 29 }
+
+### $inc    添加数量
+> db.students.update({name: 'zx'},{$inc: {age: 4}})   // 给age加上4
+// 给age加上
+{ "_id" : 1, "name" : "zx", "age" : 32 }
+{ "_id" : 2, "age" : 25 }
+{ "_id" : 3, "name" : "zx", "age" : 25 }
+
+### $unset    删除字段
+> db.students.update({name: 'zx'},{$unset: {age: 25}})
+// {$unset: {age: 25}} age的参数不会生效，只会更新匹配条件的第一条数据
+{ "_id" : 1, "name" : "zx" }
+{ "_id" : 2, "age" : 25 }
+{ "_id" : 3, "name" : "zx", "age" : 25 }
 ```
-[图一](./imge/1.png)   [图二](./imge/2.png)
