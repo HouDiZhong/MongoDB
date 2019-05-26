@@ -1,0 +1,10 @@
+{
+  "name": "learnmongodb",
+  "version": "1.0.0",
+  "description": "学习monggo视频",
+  "main": "index.js",
+  "repository": "git@github.com:HouDiZhong/MongoDB.git",
+  "author": "dizhong <jiuwu1020@126.com>",
+  "license": "MIT",
+  "private": false
+}
