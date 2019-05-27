@@ -72,6 +72,13 @@ params {
     upsert: true  // 默认false，更新时没有数据，就会创建一条新的数据
 }
 
+### 操作后的提示信息
+{ 
+    "nMatched" : 1,    // 匹配到多少条数据
+    "nUpserted" : 0,   // 因为更新而插入的条数
+    "nModified" : 1    // 更改的条数
+}
+
 ### $set    添加字段
 原始数据库信息
 { "_id" : 1, "name" : "zx", "age" : 24 }
@@ -126,4 +133,42 @@ params {
 { "_id" : 1, "name" : "zx" }
 { "_id" : 2, "age" : 25 }
 { "_id" : 3, "name" : "zx", "age" : 25 }
+
+### $push    数组追加
+{ "_id" : ObjectId("5ceb4437b8d5eb6a3038de94"), "name" : "zx", "hobby" : [] }
+> db.students.update({name: 'zx'},{$push: {hobby: '篮球'}})
+
+{ "_id" : ObjectId("5ceb4437b8d5eb6a3038de94"), "name" : "zx", "hobby" : [ "篮球" ] }
+
+### $ne    匹配条件
+{ "_id" : ObjectId("5ceb4437b8d5eb6a3038de94"), "name" : "zx", "hobby" : [] }
+> db.students.find({name: {$ne: 'zx'}})   // 因为加了$ne
+//  数据里有一条name为zx的，但是输出结果为空
+
+> db.students.update({name: 'zx',hobby: {$ne: '篮球'}},{$push: {hobby: '篮球'}}) 
+// 因为hobby 加了$ne等于篮球，所以就不会在数组再添加一次
+{ "_id" : ObjectId("5ceb4437b8d5eb6a3038de94"), "name" : "zx", "hobby" : [ "篮球" ] }
+
+### $addToSet    set在se6中不允许重复
+> db.students.update({name: 'zx'},{$addToSet: {hobby: '篮球'}})
+// 匹配到一条，但是没有更新也没有更改
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 0 })
+// 执行了条件之后
+{ "_id" : ObjectId("5ceb4e0fb8d5eb6a3038de95"), "name" : "zx", "hobby" : [ "篮球" ] }
+
+### $each    将添加的数据遍历出来
+加上了$each
+> db.students.update({name: 'zx'},{$addToSet: {hobby: {$each: ['羽毛球','橄榄球']}}})
+
+{ "_id" : ObjectId("5ceb4e0fb8d5eb6a3038de95"), "name" : "zx", "hobby" : [ "篮球", "羽毛球", "橄榄球" ] }
+
+如果不加上 $each
+db.students.update({name: 'zx'},{$addToSet: {hobby: ['羽毛球','橄榄球']}})
+{ "_id" : ObjectId("5ceb4e0fb8d5eb6a3038de95"), "name" : "zx", "hobby" : [ "篮球", [ "羽毛球", "橄榄球" ] ] }
+
+### 修改指定索引元素
+db.students.update({name: 'zx'},{$set: {'hobby.2': '足球'}})  // hobby.2  是指数组的下标
+// 修改后的数组
+{ "_id" : ObjectId("5ceb4e0fb8d5eb6a3038de95"), "name" : "zx", "hobby" : [ "篮球", "羽毛球", "足球" ] }
 ```
+### [runCommand()](./index.js '点击查看')
