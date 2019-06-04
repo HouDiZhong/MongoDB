@@ -435,3 +435,28 @@ db.gis.find({gis: {$within: {$center: [[2,2],1]}}})
 ![2b索引图解](./img/gis.png)
 
 ## [主从（mongodb4.0.9现在已经不支持了）](./master-slave)
+
+## 副本集
+```
+数据库conf
+// 第一个数据
+dbpath=./pepl1
+port=1001
+replSet=group
+// 第二个数据
+dbpath=./pepl1
+port=1001
+replSet=group
+
+初始化
+use admin
+var conf = {
+    _id: 'group',
+    members: [
+        {_id: 0, host: '127.0.0.1:1001'},
+        {_id: 1, host: '127.0.0.1:1002'}
+    ]
+}
+rs.initiate(conf)
+rs.status()
+```
