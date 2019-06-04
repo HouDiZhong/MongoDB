@@ -436,7 +436,7 @@ db.gis.find({gis: {$within: {$center: [[2,2],1]}}})
 
 ## [主从（mongodb4.0.9现在已经不支持了）](./master-slave)
 
-## 副本集
+## [副本集](./rplica-set)
 ```
 数据库conf
 // 第一个数据
