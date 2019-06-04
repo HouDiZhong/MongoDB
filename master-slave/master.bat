@@ -1,0 +1,1 @@
+mongod --config ./master.conf
