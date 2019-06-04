@@ -2,7 +2,7 @@
  * @Author: zx·H
  * @Date: 2019-05-27 11:01:32
  * @LastEditors: zx·H
- * @LastEditTime: 2019-05-27 11:24:17
+ * @LastEditTime: 2019-06-03 10:14:06
  * @Description: mongo 运行脚本
  * @run 1. 在非mongo状态下： mongo index.js   2.在mongo状态下  load('./index')
  */

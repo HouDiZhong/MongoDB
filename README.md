@@ -58,6 +58,9 @@ db.createCollection('students')
 db.students.find()
 // 查询students 下的数据
 
+db.students.find().explain(true)
+// 显示查询信息
+
 db.students.count()
 // 查询students 一共有多少数据
 
@@ -215,7 +218,7 @@ db.collection.find({$or: [{name: 'zx'},{age: 20}]})  // name = 'zx' || age =20
 db.collection.find({name: 'zx'},{$or: [{age: 20}, {age: 100}]}) // (name = 'zx') && (age = 20 || age = 100)
 
 ### skip(3) limit(3) sort({})
-db.collection.find().skip(3).limit(3)  // 跳过开头的3条，然后再去三条数据
+db.collection.find().skip(3).limit(3)  // skip跳过3条，limit取出三条数据
 db.collection.find().sort({age: -1}).skip(3).limit(3)  // 倒叙排序 -1倒叙 1正序
 ```
 
@@ -360,3 +363,73 @@ mongofiles -d myfiles get text.txt
 删除文件
 mongofiles -d myfiles delete text.txt
 ```
+
+## 索引
+```
+创建索引
+db.collections.createIndex({age: 1})
+
+创建指定名称索引
+db.collections.createIndex({age: 1},{name: 'nameIndex'})
+
+创建唯一索引
+db.collections.createIndex({age: 1},{name: 'nameIndex',unique: true})
+
+后台创建索引
+db.collections.createIndex({age: 1},{name: 'nameIndex',background: true})
+
+过期删除
+db.collections.createIndex({time: 1},{name: 'nameIndex',expireAfterSeconds: 10})
+// 索引关键字段必须是Date类型  非立即执行  单字段索引，混合索引不支持
+
+全文检索
+1. db.collections.insert({content: 'I am a boy'})
+   db.collections.insert({content: 'I am a boy,girl'})
+   db.collections.insert({content: 'I am a girl'})
+2. db.collections.createIndex({constent: 'text'})
+3. db.collections.find($text: {$search: 'boy'}})  
+/*
+    {$search: 'boy'} 查找有boy的
+    {$search: 'boy -girl'} 有boy，不带girl的
+    {$search: 'boy girl'} 或的关系
+*/
+
+查看
+db.collections.getIndexes()
+
+删除
+db.collections.dropIndex('索引名称')
+
+删除所有索引
+db.collections.dropIndexes()
+```
+
+## 2d索引
+```
+创建数据
+var gis = [
+    {gis: {x: 1, y: 1}},
+    {gis: {x: 1, y: 2}},
+    {gis: {x: 1, y: 3}},
+    {gis: {x: 2, y: 1}},
+    {gis: {x: 2, y: 2}},
+    {gis: {x: 2, y: 3}},
+    {gis: {x: 3, y: 1}},
+    {gis: {x: 3, y: 2}},
+    {gis: {x: 3, y: 3}},
+]
+db.gis.insert(gis)
+
+创建2b索引
+db.gis.createIndex({gis: '2d'})
+
+查询距离某点最近的3个点
+db.gis.find({gis: {$near: [1,1]}}).limit(3)
+
+矩形对角
+db.gis.find({gis: {$within: {$box: [[1,3],[2,2]]}}})
+
+圆形
+db.gis.find({gis: {$within: {$center: [[2,2],1]}}})
+```
+![2b索引图解](./img/gis.png)
