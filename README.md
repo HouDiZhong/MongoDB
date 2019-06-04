@@ -434,4 +434,4 @@ db.gis.find({gis: {$within: {$center: [[2,2],1]}}})
 ```
 ![2b索引图解](./img/gis.png)
 
-## [主从（mongodb4.0.9现在已经不支持了）](./src/master-slave)
+## [主从（mongodb4.0.9现在已经不支持了）](./master-slave)
